@@ -1,0 +1,108 @@
+<title>jorbsite | particle life</title>
+<style>
+  body {
+    background-color: #114
+  }
+  
+  #life {
+    border: 2px solid #bbe;
+    border-radius: 15px;
+  }
+</style>
+<canvas id="life" width="500" height="500"></canvas>
+<script>
+  canvas=document.getElementById("life")
+  m=canvas.getContext('2d')
+  
+  canvas.width = window.innerWidth - 25
+  canvas.height = window.innerHeight - 25
+  p=GetURLParameter('p')
+  if (!p){p=(canvas.width*canvas.height)/1500}
+  
+  function GetURLParameter(sParam)
+  {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) 
+    {
+      var sParameterName = sURLVariables[i].split('=');
+      if (sParameterName[0] == sParam) 
+      {
+        return sParameterName[1];
+      }
+    }
+  }
+   
+  draw=(x,y,c,s)=>{
+    m.fillStyle=c
+    m.fillRect(x,y,s,s)
+  }
+  
+  particles=[]
+  particle=(x,y,c)=>{
+    return{"x":x, "y":y, "vx":0, "vy":0, "color":c}
+  }
+  
+  random=()=>{
+    return Math.random()*400+50
+  }
+  
+  create=(number, color)=>{
+    group=[]
+    for(let i=0; i<number; i++){
+      group.push(particle(random(), random(), color))
+      particles.push(group[i])
+    }
+    return group
+  }
+  
+  rule=(particles1, particles2, g)=>{
+    for(let i=0; i<particles1.length; i++){
+      fx = 0
+      fy = 0
+      
+      for(let j=0; j<particles2.length; j++){
+        a = particles1[i]
+        b = particles2[j]
+        dx = a.x - b.x
+        dy = a.y - b.y
+        d = Math.sqrt(dx*dx + dy*dy)
+        
+        if(d > 0 && d < 75){
+          F = g * 1/d
+          fx += F * dx
+          fy += F * dy
+        }
+      }
+      
+      a.vx = (a.vx + fx)*0.5
+      a.vy = (a.vy + fy)*0.5
+      a.x += a.vx
+      a.y += a.vy
+      if(a.x <= 0 || a.x >= canvas.width){a.vx *= -1}
+      if(a.y <= 0 || a.y >= canvas.height){a.vy *= -1}
+    }
+  }
+  
+  yellow = create(p,"yellow")
+  red = create(p, "red")
+  green = create(p, "green")
+  
+  update=()=>{
+    rule(green, green, -0.32)
+    rule(green, red, -0.17)
+    rule(green, yellow, 0.34)
+    rule(red, red, -0.1)
+    rule(red, green, -0.34)
+    rule(yellow, yellow, 0.15)
+    rule(yellow, green, -0.2)
+    m.clearRect(0, 0, canvas.width, canvas.height)
+    draw(0, 0, "black", canvas.width + canvas.height)
+    for(i=0; i<particles.length; i++){
+      draw(particles[i].x, particles[i].y, particles[i].color, 5)
+    }
+    requestAnimationFrame(update)
+  }
+  
+  update();
+</script>
