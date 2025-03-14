@@ -1,11 +1,18 @@
 <style>
-  body {
-    background-color: #114;
-  }
-  * {
-    font-family: sans-serif;
-  }
+    body{
+        background-color: #114;
+    }
+    *{
+        font-family: sans-serif;
+        color: #bbe;
+    }
+    #a,button{
+        background-color: #226;
+        border: 1px solid #55a;
+        border-radius: 5px;
+        margin-top: 2;
+    }
 </style>
 <input id="a" type="text"><br>
-<button type="button" onclick="a=document.getElementById('a'); b=document.getElementById('b'); p='http://hoodamath.com/mobile/games/'+a.value.toLowerCase().replaceAll(' ','-')+'/game.html?nocheckorient=1'; b.innerHTML=p; b.href=p;">Get Fullscreen Page</button><br>
+<button type="button" onclick="a=document.getElementById('a');b=document.getElementById('b');p='http://hoodamath.com/mobile/games/'+a.value.toLowerCase().replaceAll(' ','-')+'/game.html?nocheckorient=1';b.innerHTML=p;b.href=p;">Get Fullscreen Page</button><br>
 <a id="b">Output will appear here</a>
