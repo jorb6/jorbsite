@@ -16,6 +16,10 @@ header, footer {
   text-align: center;
   padding: 5px;
   background-color: #226;
-  border-top: 2px solid #bbe;
-  border-bottom: 2px solid #bbe;
+  border-top: 3px solid #bbe;
+  border-bottom: 3px solid #bbe;
+}
+
+hr {
+    border: 1px solid #bbe;
 }
