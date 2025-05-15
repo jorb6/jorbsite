@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Langton's Ant</title>
+  <style>
+    canvas { background: #f0f0f0; display: block; margin: auto; }
+  </style>
+</head>
+<body>
+  <canvas id="antCanvas" width="800" height="800"></canvas>
+<div style="text-align: center; margin-top: 10px;">
+  <label for="speedSlider">Steps per frame: <span id="speedValue">50</span></label><br>
+  <input type="range" id="speedSlider" min="1" max="100" value="50">
+</div>
+  <script>
+      const canvas = document.getElementById('antCanvas');
+const ctx = canvas.getContext('2d');
+
+const cellSize = 5;
+const cols = canvas.width / cellSize;
+const rows = canvas.height / cellSize;
+
+// Grid stores 0 (white) or 1 (black)
+const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+// Ant state
+let antX = Math.floor(cols / 2);
+let antY = Math.floor(rows / 2);
+let dir = 0;
+
+// Slider setup
+const speedSlider = document.getElementById('speedSlider');
+const speedValue = document.getElementById('speedValue');
+
+function drawCell(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+}
+
+function update() {
+  const current = grid[antY][antX];
+  grid[antY][antX] = 1 - current;
+  drawCell(antX, antY, current ? '#f0f0f0' : '#000000');
+  dir = (dir + (current ? 3 : 1)) % 4;
+
+  if (dir === 0) antY--;
+  else if (dir === 1) antX++;
+  else if (dir === 2) antY++;
+  else if (dir === 3) antX--;
+
+  antX = (antX + cols) % cols;
+  antY = (antY + rows) % rows;
+}
+
+function loop() {
+  const steps = parseInt(speedSlider.value);
+  speedValue.textContent = steps;
+
+  for (let i = 0; i < steps; i++) update();
+  requestAnimationFrame(loop);
+}
+
+loop();
+
+  </script>
+</body>
+</html>
