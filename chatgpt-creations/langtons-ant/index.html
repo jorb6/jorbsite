@@ -22,6 +22,8 @@ const rows = canvas.height / cellSize;
 
 // Grid stores 0 (white) or 1 (black)
 const grid = Array.from({ length: rows }, () => Array(cols).fill(0));
+const ages = Array.from({ length: rows }, () => Array(cols).fill(-1));
+
 
 // Ant state
 let antX = Math.floor(cols / 2);
@@ -32,17 +34,29 @@ let dir = 0;
 const speedSlider = document.getElementById('speedSlider');
 const speedValue = document.getElementById('speedValue');
 
-function drawCell(x, y, color) {
+function drawCell(x, y, value, age) {
+  let color;
+  if (value === 1) {
+    // Recently flipped = more blue
+    const maxAge = 200;
+    const normalized = Math.max(0, 1 - age / maxAge);
+    const blue = Math.floor(255 * normalized);
+    color = `rgb(${240 - blue}, ${240 - blue}, 255)`; // fades to white
+  } else {
+    color = '#f0f0f0'; // white
+  }
+
   ctx.fillStyle = color;
   ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
 }
 
+
 function update() {
   const current = grid[antY][antX];
   grid[antY][antX] = 1 - current;
-  drawCell(antX, antY, current ? '#f0f0f0' : '#000000');
-  dir = (dir + (current ? 3 : 1)) % 4;
+  ages[antY][antX] = 0; // mark as freshly changed
 
+  dir = (dir + (current ? 3 : 1)) % 4;
   if (dir === 0) antY--;
   else if (dir === 1) antX++;
   else if (dir === 2) antY++;
@@ -52,13 +66,29 @@ function update() {
   antY = (antY + rows) % rows;
 }
 
+
 function loop() {
   const steps = parseInt(speedSlider.value);
   speedValue.textContent = steps;
 
-  for (let i = 0; i < steps; i++) update();
+  for (let i = 0; i < steps; i++) {
+    update();
+  }
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      if (grid[y][x] === 1) {
+        if (ages[y][x] >= 0) ages[y][x]++;
+        drawCell(x, y, grid[y][x], ages[y][x]);
+      } else {
+        drawCell(x, y, grid[y][x], -1);
+      }
+    }
+  }
+
   requestAnimationFrame(loop);
 }
+
 
 loop();
 
